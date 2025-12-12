@@ -118,14 +118,14 @@ function adapter.discover_positions(path)
     ; Matches: `describe('context')`
     ((call_expression
       function: (identifier) @func_name (#eq? @func_name "describe")
-      arguments: (arguments (string (string_fragment) @namespace.name) (arrow_function))
+      arguments: (arguments [(string (string_fragment) @namespace.name) ((identifier) @namespace.name)] (arrow_function))
     )) @namespace.definition
     ; Matches: `describe.only('context')`
     ((call_expression
       function: (member_expression
         object: (identifier) @func_name (#any-of? @func_name "describe")
       )
-      arguments: (arguments (string (string_fragment) @namespace.name) (arrow_function))
+      arguments: (arguments [(string (string_fragment) @namespace.name) ((identifier) @namespace.name)] (arrow_function))
     )) @namespace.definition
     ; Matches: `describe.each(['data'])('context')`
     ((call_expression
@@ -134,7 +134,7 @@ function adapter.discover_positions(path)
           object: (identifier) @func_name (#any-of? @func_name "describe")
         )
       )
-      arguments: (arguments (string (string_fragment) @namespace.name) (arrow_function))
+      arguments: (arguments [(string (string_fragment) @namespace.name) ((identifier) @namespace.name)] (arrow_function))
     )) @namespace.definition
 
     ; -- Tests --
