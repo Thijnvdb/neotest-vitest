@@ -136,6 +136,13 @@ function adapter.discover_positions(path)
       )
       arguments: (arguments [(string (string_fragment) @namespace.name) ((identifier) @namespace.name)] (arrow_function))
     )) @namespace.definition
+    ; Matches: `layer(...)('context', () => ...)` (@effect/vitest syntax)
+    ((call_expression
+      function: (call_expression
+        function: (identifier) @func_name (#eq? @func_name "layer")
+      )
+      arguments: (arguments (string (string_fragment) @namespace.name) (arrow_function))
+    )) @namespace.definition
 
     ; -- Tests --
     ; Matches: `test('test') / it('test')`
@@ -305,7 +312,6 @@ function adapter.build_spec(args)
   end
 
   vim.list_extend(command, {
-    "--watch=false",
     "--reporter=verbose",
     "--reporter=json",
     "--outputFile=" .. results_path,
@@ -314,6 +320,17 @@ function adapter.build_spec(args)
   })
 
   vim.list_extend(command, args.extra_args or {})
+
+  if
+    not vim.list_contains(command, "-w")
+    and not vim.list_contains(command, "--watch")
+    and not vim.list_contains(command, "--watch=true")
+    and not vim.list_contains(command, "--watch=false")
+  then
+    vim.list_extend(command, {
+      "--watch=false",
+    })
+  end
 
   local cwd = getCwd(pos.path)
 
